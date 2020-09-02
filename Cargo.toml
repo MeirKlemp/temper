@@ -1,0 +1,11 @@
+[package]
+name = "temper"
+version = "0.2.0"
+authors = ["Meir Klemfner <251.klemp.work@gmail.com>"]
+edition = "2018"
+license = "MIT"
+description = "A cli tool for converting between temperature scales."
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
