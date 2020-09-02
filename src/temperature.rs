@@ -1,6 +1,8 @@
 use std::fmt::{self, Display, Formatter};
 use std::str::FromStr;
 
+use Temperature::*;
+
 #[derive(Debug, PartialEq)]
 pub enum Temperature {
     Celsius,
@@ -15,16 +17,16 @@ impl FromStr for Temperature {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.to_lowercase();
         if "celsius".starts_with(&s) {
-            return Ok(Temperature::Celsius);
+            return Ok(Celsius);
         }
         if "fahrenheit".starts_with(&s) {
-            return Ok(Temperature::Fahrenheit);
+            return Ok(Fahrenheit);
         }
         if "kelvin".starts_with(&s) {
-            return Ok(Temperature::Kelvin);
+            return Ok(Kelvin);
         }
         if "rankine".starts_with(&s) {
-            return Ok(Temperature::Rankine);
+            return Ok(Rankine);
         }
         Err("not implemented")
     }
@@ -33,10 +35,10 @@ impl FromStr for Temperature {
 impl Display for Temperature {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            Temperature::Celsius => write!(f, "celsius"),
-            Temperature::Fahrenheit => write!(f, "fahrenheit"),
-            Temperature::Kelvin => write!(f, "kelvin"),
-            Temperature::Rankine => write!(f, "rankine"),
+            Celsius => write!(f, "celsius"),
+            Fahrenheit => write!(f, "fahrenheit"),
+            Kelvin => write!(f, "kelvin"),
+            Rankine => write!(f, "rankine"),
         }
     }
 }
@@ -67,46 +69,46 @@ impl TemperConversion {
 
     fn convert(&self) -> f64 {
         match self.from {
-            Temperature::Celsius => self.convert_celsius(),
-            Temperature::Fahrenheit => self.convert_fahrenheit(),
-            Temperature::Kelvin => self.convert_kelvin(),
-            Temperature::Rankine => self.convert_rankine(),
+            Celsius => self.convert_celsius(),
+            Fahrenheit => self.convert_fahrenheit(),
+            Kelvin => self.convert_kelvin(),
+            Rankine => self.convert_rankine(),
         }
     }
 
     fn convert_celsius(&self) -> f64 {
         match self.to {
-            Temperature::Celsius => self.degrees,
-            Temperature::Fahrenheit => self.degrees * (9.0 / 5.0) + 32.0,
-            Temperature::Kelvin => self.degrees + 273.15,
-            Temperature::Rankine => self.degrees * (9.0 / 5.0) + 491.67,
+            Celsius => self.degrees,
+            Fahrenheit => self.degrees * (9.0 / 5.0) + 32.0,
+            Kelvin => self.degrees + 273.15,
+            Rankine => self.degrees * (9.0 / 5.0) + 491.67,
         }
     }
 
     fn convert_fahrenheit(&self) -> f64 {
         match self.to {
-            Temperature::Celsius => (self.degrees - 32.0) * (5.0 / 9.0),
-            Temperature::Fahrenheit => self.degrees,
-            Temperature::Kelvin => (self.degrees - 32.0) * (5.0 / 9.0) + 273.15,
-            Temperature::Rankine => self.degrees + 459.67,
+            Celsius => (self.degrees - 32.0) * (5.0 / 9.0),
+            Fahrenheit => self.degrees,
+            Kelvin => (self.degrees - 32.0) * (5.0 / 9.0) + 273.15,
+            Rankine => self.degrees + 459.67,
         }
     }
 
     fn convert_kelvin(&self) -> f64 {
         match self.to {
-            Temperature::Celsius => self.degrees - 273.15,
-            Temperature::Fahrenheit => (self.degrees - 273.15) * (9.0 / 5.0) + 32.0,
-            Temperature::Kelvin => self.degrees,
-            Temperature::Rankine => (self.degrees - 273.15) * (9.0 / 5.0) + 491.67,
+            Celsius => self.degrees - 273.15,
+            Fahrenheit => (self.degrees - 273.15) * (9.0 / 5.0) + 32.0,
+            Kelvin => self.degrees,
+            Rankine => (self.degrees - 273.15) * (9.0 / 5.0) + 491.67,
         }
     }
 
     fn convert_rankine(&self) -> f64 {
         match self.to {
-            Temperature::Celsius => (self.degrees - 491.67) * (5.0 / 9.0),
-            Temperature::Fahrenheit => self.degrees - 459.67,
-            Temperature::Kelvin => (self.degrees - 491.67) * (5.0 / 9.0) + 273.15,
-            Temperature::Rankine => self.degrees,
+            Celsius => (self.degrees - 491.67) * (5.0 / 9.0),
+            Fahrenheit => self.degrees - 459.67,
+            Kelvin => (self.degrees - 491.67) * (5.0 / 9.0) + 273.15,
+            Rankine => self.degrees,
         }
     }
 }
@@ -127,76 +129,71 @@ mod tests {
     #[test]
     fn parse_temperature() {
         let celsius: Temperature = "Celsiu".parse().unwrap();
-        assert_eq!(celsius, Temperature::Celsius);
+        assert_eq!(celsius, Celsius);
         let fahrenheit: Temperature = "f".parse().unwrap();
-        assert_eq!(fahrenheit, Temperature::Fahrenheit);
+        assert_eq!(fahrenheit, Fahrenheit);
         let kelvin: Result<Temperature, _> = "elvin".parse();
         assert!(kelvin.is_err());
         let rankine: Temperature = "RANKINE".parse().unwrap();
-        assert_eq!(rankine, Temperature::Rankine);
+        assert_eq!(rankine, Rankine);
     }
 
     #[test]
     fn display_temperature() {
-        let celsius = format!("{}", Temperature::Celsius);
+        let celsius = format!("{}", Celsius);
         assert_eq!(celsius, "celsius");
-        let fahrenheit = format!("{}", Temperature::Fahrenheit);
+        let fahrenheit = format!("{}", Fahrenheit);
         assert_eq!(fahrenheit, "fahrenheit");
-        let kelvin = format!("{}", Temperature::Kelvin);
+        let kelvin = format!("{}", Kelvin);
         assert_eq!(kelvin, "kelvin");
-        let rankine = format!("{}", Temperature::Rankine);
+        let rankine = format!("{}", Rankine);
         assert_eq!(rankine, "rankine");
     }
 
     #[test]
     fn celsius_conversion() {
-        let conversion = TemperConversion::new(50.0, Temperature::Celsius, Temperature::Celsius);
+        let conversion = TemperConversion::new(50.0, Celsius, Celsius);
         assert!(float_cmp(conversion.result(), 50.0));
-        let conversion = TemperConversion::new(50.0, Temperature::Celsius, Temperature::Fahrenheit);
+        let conversion = TemperConversion::new(50.0, Celsius, Fahrenheit);
         assert!(float_cmp(conversion.result(), 122.0));
-        let conversion = TemperConversion::new(50.0, Temperature::Celsius, Temperature::Kelvin);
+        let conversion = TemperConversion::new(50.0, Celsius, Kelvin);
         assert!(float_cmp(conversion.result(), 323.15));
-        let conversion = TemperConversion::new(50.0, Temperature::Celsius, Temperature::Rankine);
+        let conversion = TemperConversion::new(50.0, Celsius, Rankine);
         assert!(float_cmp(conversion.result(), 581.67));
     }
 
     #[test]
     fn fahrenheit_conversion() {
-        let conversion =
-            TemperConversion::new(122.0, Temperature::Fahrenheit, Temperature::Celsius);
+        let conversion = TemperConversion::new(122.0, Fahrenheit, Celsius);
         assert!(float_cmp(conversion.result(), 50.0));
-        let conversion =
-            TemperConversion::new(122.0, Temperature::Fahrenheit, Temperature::Fahrenheit);
+        let conversion = TemperConversion::new(122.0, Fahrenheit, Fahrenheit);
         assert!(float_cmp(conversion.result(), 122.0));
-        let conversion = TemperConversion::new(122.0, Temperature::Fahrenheit, Temperature::Kelvin);
+        let conversion = TemperConversion::new(122.0, Fahrenheit, Kelvin);
         assert!(float_cmp(conversion.result(), 323.15));
-        let conversion =
-            TemperConversion::new(122.0, Temperature::Fahrenheit, Temperature::Rankine);
+        let conversion = TemperConversion::new(122.0, Fahrenheit, Rankine);
         assert!(float_cmp(conversion.result(), 581.67));
     }
     #[test]
     fn kelvin_conversion() {
-        let conversion = TemperConversion::new(323.15, Temperature::Kelvin, Temperature::Celsius);
+        let conversion = TemperConversion::new(323.15, Kelvin, Celsius);
         assert!(float_cmp(conversion.result(), 50.0));
-        let conversion =
-            TemperConversion::new(323.15, Temperature::Kelvin, Temperature::Fahrenheit);
+        let conversion = TemperConversion::new(323.15, Kelvin, Fahrenheit);
         assert!(float_cmp(conversion.result(), 122.0));
-        let conversion = TemperConversion::new(323.15, Temperature::Kelvin, Temperature::Kelvin);
+        let conversion = TemperConversion::new(323.15, Kelvin, Kelvin);
         assert!(float_cmp(conversion.result(), 323.15));
-        let conversion = TemperConversion::new(323.15, Temperature::Kelvin, Temperature::Rankine);
+        let conversion = TemperConversion::new(323.15, Kelvin, Rankine);
         assert!(float_cmp(conversion.result(), 581.67));
     }
 
     #[test]
     fn rankine_conversion() {
-        let conversion = TemperConversion::new(581.67, Temperature::Rankine, Temperature::Celsius);
+        let conversion = TemperConversion::new(581.67, Rankine, Celsius);
         assert!(float_cmp(conversion.result(), 50.0));
-        let conversion =
-            TemperConversion::new(581.67, Temperature::Rankine, Temperature::Fahrenheit);
+        let conversion = TemperConversion::new(581.67, Rankine, Fahrenheit);
         assert!(float_cmp(conversion.result(), 122.0));
-        let conversion = TemperConversion::new(581.67, Temperature::Rankine, Temperature::Kelvin);
+        let conversion = TemperConversion::new(581.67, Rankine, Kelvin);
         assert!(float_cmp(conversion.result(), 323.15));
-        let conversion = TemperConversion::new(581.67, Temperature::Rankine, Temperature::Rankine);
+        let conversion = TemperConversion::new(581.67, Rankine, Rankine);
         assert!(float_cmp(conversion.result(), 581.67));
     }
 
