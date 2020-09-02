@@ -8,5 +8,5 @@ A cli tool for converting between temperature scales.
     Fahrenheit, 'f' for short.
     Kelvin, 'k' for short.
     Rankine, 'r' for short.
-## Options:
+## Options
     -ro: Result Only.
